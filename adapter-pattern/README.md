@@ -94,15 +94,15 @@ var render = function (fn) {
   document.write(JSON.stringify(fn()));
 };
 
-var addressAdapter = function( oldAddressfn ){
+var addressAdapter = function(oldAddressfn) {
   var address = {},
   oldAddress = oldAddressfn();
   for (let i = 0, c; c = oldAddress[i++];){
     address[c.name] = c.id;
   }
-  return function(){
+  return function () {
     return address;
   }
 };
-render( addressAdapter( getGuangdongCity ) );
+render(addressAdapter(getGuangdongCity));
 ```
