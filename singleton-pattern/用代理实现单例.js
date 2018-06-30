@@ -1,25 +1,26 @@
-var CreateDiv = function( html ){
+const CreateDiv = function (html) {
   this.html = html;
-
   this.init();
 };
-CreateDiv.prototype.init = function(){
-  var div = document.createElement( 'div' );
+
+CreateDiv.prototype.init = function () {
+  var div = document.createElement('div');
   div.innerHTML = this.html;
-  document.body.appendChild( div );
+  document.body.appendChild(div);
 };
 
-var ProxySingletonCreateDiv = (function(){
-  var instance;
-  return function( html ){
-    if ( !instance ){
-      instance = new CreateDiv( html );
+const ProxySingletonCreateDiv = (function(){
+  let instance;
+  return function (html) {
+    if (!instance) {
+      // 代理给 CreateDiv
+      instance = new CreateDiv(html);
     }
     return instance;
   }
 })();
 
-var a = new ProxySingletonCreateDiv( 'sven1' );
-var b = new ProxySingletonCreateDiv( 'sven2' );
-alert ( a === b );
+const a = new ProxySingletonCreateDiv('foo');
+const b = new ProxySingletonCreateDiv('bar');
 
+console.log(a === b);

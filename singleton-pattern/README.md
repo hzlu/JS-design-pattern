@@ -7,13 +7,67 @@
 ## 使用闭包封装私有变量
 
 ```javascript
-var user = (function(){
-  var __name = 'sven',
-      __age = 29;
+const user = (function () {
+  const _name = 'sven';
+  const _age  = 29;
+
   return {
-    getUserInfo: function(){
-      return __name + '-' + __age;
+    getUserInfo: function () {
+      return `${_name}-${_age}`;
     }
   }
 })();
+
+user.getUserInfo();
+```
+
+## 标准单例
+
+```javascript
+const Singleton = function (name) {
+  this.name = name;
+  this.instance = null;
+};
+
+Singleton.prototype.getName = function () {
+  console.log(this.name);
+};
+
+Singleton.getInstance = function (name) {
+  if (!this.instance){
+    this.instance = new Singleton(name);
+  }
+  return this.instance;
+};
+
+const a = Singleton.getInstance('foo');
+const b = Singleton.getInstance('bar');
+a.getName();
+console.log(a === b); // true
+```
+
+## 标准单例 2
+
+```javascript
+const Singleton = function (name) {
+  this.name = name;
+};
+
+Singleton.prototype.getName = function () {
+  console.log(this.name);
+};
+
+Singleton.getInstance = (function(){
+  var instance = null;
+  // 闭包
+  return function(name){
+    if (!instance){
+      instance = new Singleton(name);
+    }
+    return instance;
+  }
+})();
+
+Singleton.getInstance('foo').getName();
+Singleton.getInstance('bar').getName();
 ```
