@@ -179,7 +179,7 @@ Function.prototype.after = function (fn) {
 };
 
 const order = order500yuan.after(order200yuan).after(orderNormal);
-order( 1, true, 500 ); // 输出：500 元定金预购，得到100 优惠券
-order( 2, true, 500 ); // 输出：200 元定金预购，得到50 优惠券
-order( 1, false, 500 ); // 输出：普通购买，无优惠券
+order(1, true, 500);  // 输出：500 元定金预购，得到100 优惠券
+order(2, true, 500);  // 输出：200 元定金预购，得到50 优惠券
+order(1, false, 500); // 输出：普通购买，无优惠券
 ```
