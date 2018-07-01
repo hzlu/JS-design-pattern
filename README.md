@@ -4,7 +4,7 @@
 
 ## 基础知识
 
-- [面向对象的JavaScript](面向对象的JavaScript)
+- [面向对象的JavaScript](object-oriented)
 - [this call apply](this-call-apply)
 - [闭包](closure)
 
