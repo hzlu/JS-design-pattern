@@ -2,6 +2,12 @@
 
 根据曾探所著《JavaScript设计模式与开发实践》整理的学习笔记
 
+## 基础知识
+
+- [面向对象的JavaScript](面向对象的JavaScript)
+- [this call apply](this-call-apply)
+- [闭包](closure)
+
 ## 创建模式
 
 - [单例模式](singleton-pattern)
