@@ -1,12 +1,12 @@
 ﻿# 面向对象的 JavaScript
 
-## 鸭子类型
+## 鸭子类型
 
 > 鸭子类型（duck typing）
 >
 > 如果它走起路来像鸭子，叫起来也是鸭子，那么它就是鸭子。
 >
-> 鸭子类型指导我们只关注*对象的行为*，而不关注对象本身。
+> 鸭子类型指导我们只关注*对象的行为*，而不关注对象本身。
 
 |分类|静态类型语言|动态类型语言|
 |---|---|---|
@@ -43,7 +43,7 @@ joinChoir( chicken ); // 恭喜加入合唱团
 
 > 面向实现编程，变量指向特定类的实例，有一种强烈的依赖关系，会大大抑制编程的灵活性和可复用性。
 >
-> 面向接口编程，客户无需知道他们使用对象的特定类型，只需对象有客户所期望的接口（方法）。
+> 面向接口编程，客户无需知道他们使用对象的特定类型，只需对象有客户所期望的接口（方法）。
 >
 > 面向接口编程，而不是面向实现编程。
 
@@ -60,7 +60,7 @@ var makeSound = function (animal) {
   if (animal instanceof Duck) {
     console.log('嘎嘎嘎');
   } else if (animal instanceof Chicken) {
-    console.log('咯咯咯');
+    console.log('咯咯咯');
   }
 };
 var Duck = function () {};
@@ -76,7 +76,7 @@ makeSound(new Chicken());
 
 ```javascript
 var makeSound = function (animal) {
-  animal.sound();
+  animal.sound();
 };
 
 var Duck = function () {};
@@ -92,7 +92,7 @@ Chicken.prototype.sound = function () {
 
 ### 使用继承获得多态效果
 
-使用继承（*实现继承*和*接口继承*）来得到多态效果，是让对象表现出多态性的最常用手段。
+使用继承（*实现继承*和*接口继承*）来得到多态效果，是让对象表现出多态性的最常用手段。
 
 ### JavaScript的多态
 
@@ -202,7 +202,7 @@ var b = new B();
 console.log(b.name); // 输出：foo
 ```
 
-## 结语
+## 结语
 
 设计模式在很多时候其实都体现了语言的不足之处。
 
