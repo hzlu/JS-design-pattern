@@ -116,7 +116,7 @@ let normalUser = UserFactory('NormalUser');
 
 ### ES6 重写工厂方法模式
 
-> `new.target` 指向直接被 `new` 执行的构造函数
+> `new.target` 指向直接被 `new` 执行的构造函数
 
 ```javascript
 class User {
@@ -158,7 +158,7 @@ let user = userFactory.create('user');
 
 ## 抽象工厂模式
 
-于简单工厂、工厂方法模式不同，抽象工厂模式不直接生成实例，而是类的继承进行类的管理。
+于简单工厂、工厂方法模式不同，抽象工厂模式不直接生成实例，而是类的继承进行类的管理。
 
 ```javascript
 let AccountAbstractFactory = function (subType, superType) {
