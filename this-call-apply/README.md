@@ -2,105 +2,56 @@
 
 ## this
 
-示例代码
+* this 具体指向哪个对象是在运行时基于函数的执行环境动态绑定，而非声明时的环境
+* 作为对象的方法调用，this 指向该对象
+* 作为普通函数调用，this 指向全局对象
+  * 在严格模式下 this 不会指向全局对象，而是 `undefined`
+* 作为构造器函数调用，this 指向返回的对象
+  * 如果构造器显式返回一个 `object` 类型的对象，new 运算结果最终返回这个对象，而不是 this
+  * 如果不显式返回数据，或返回非对象类型的数据，就不会有上面的问题
+* call 和 apply 可以动态改变传入的 this，能很好体现 JavaScript 的函数式语言特性
 
 ```javascript
-//当函数作为对象的方法被调用时，this 指向该对象：
-var obj = {
-  a: 1,
-  getA: function(){
-    alert ( this === obj ); // 输出：true
-    alert ( this.a ); // 输出: 1
+var getId = function (id) {
+  return document.getElementById(id);
+};
+getId('div1');
+
+// 我们也许思考过为什么不能用下面这种更简单的方式：
+var getId = document.getElementById;
+getId('div1');
+
+// 我们可以尝试利用 apply 把 document 当作this 传入 getId 函数，帮助修正 this：
+document.getElementById = (function (func) {
+  return function () {
+    return func.apply(document, arguments);
   }
-};
+})(document.getElementById);
 
-obj.getA();
-
-//在浏览器的JavaScript 里，这个全局对象是window 对象。
-window.name = 'globalName';
-
-var getName = function(){
-  return this.name;
-};
-console.log( getName() ); // 输出：globalName
-
-//或者：
-window.name = 'globalName';
-
-var myObject = {
-  name: 'sven',
-  getName: function(){
-    return this.name;
-  }
-};
-
-var getName = myObject.getName;
-console.log( getName() ); // globalName
+var getId = document.getElementById;
+var div = getId('div1');
 ```
 
-示例代码2
+## Function.prototype.call 与 Function.prototype.apply
+
+* JavaScript 的参数在内部就是用一个数组来表示，从这个意义上来说，apply 比 call 使用率更高
+* call 是包装在 apply 上面的一颗语法糖
+* 如果传入第一个参数是 `null` 函数体内 `this` 会指向默认宿主对象 `global`
+  * 严格模式下，函数体内 `this` 还是为 `null`
 
 ```javascript
-window.id = 'window';
-
-document.getElementById( 'div1' ).onclick = function(){
-  alert ( this.id ); // 输出：'div1'
-  var callback = function(){
-    alert ( this.id ); // 输出：'window'
-  }
-  callback();
-};
-
-
-document.getElementById( 'div1' ).onclick = function(){
-  var that = this; // 保存div 的引用
-  var callback = function(){
-    alert ( that.id ); // 输出：'div1'
-  }
-  callback();
+// 模拟 Function.prototype.bind
+Function.prototype.bind = function () {
+  // 保存原函数
+  const self = this;
+  // 需绑定的 this 上下文
+  const context = [].shift.call(arguments);
+  // 剩余的参数转为数组
+  const args = [].slice.call(arguments);
+  return function () {
+    // 合并两次分别传入的参数作为新函数的参数
+    return self.apply(context, [].concat(args, [].slice.call(arguments)));
+  };
 };
 ```
 
-示例代码3
-
-```javascript
-//构造器里的this 就指向返回的这个对象，见如下代码：
-var MyClass = function(){
-  this.name = 'sven';
-};
-
-var obj = new MyClass();
-alert ( obj.name ); // 输出：sven
-
-var MyClass = function(){
-  this.name = 'sven';
-  return { // 显式地返回一个对象
-    name: 'anne'
-  }
-};
-
-var obj = new MyClass();
-alert ( obj.name ); // 输出：anne
-
-var MyClass = function(){
-  this.name = 'sven'
-  return 'anne'; // 返回string 类型
-};
-
-var obj = new MyClass();
-alert ( obj.name ); // 输出：sven
-
-var obj1 = {
-  name: 'sven',
-  getName: function(){
-    return this.name;
-  }
-};
-
-var obj2 = {
-  name: 'anne'
-};
-
-console.log( obj1.getName() ); // 输出: sven
-console.log( obj1.getName.call( obj2 ) ); // 输出：anne
-```
