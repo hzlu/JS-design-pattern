@@ -54,8 +54,11 @@ joinChoir( chicken ); // 恭喜加入合唱团
 > 同一操作作用于不同的对象上面，可以产生不同的解释和不同的执行结果。
 >
 > 多态思想实际上是把『做什么』和『谁去做』分离开来。
+>
+> 多态思想是把不变的部分（动物都会叫）隔离出来，把可变的部分（具体怎么叫）封装起来。
 
 ```javascript
+// 随着动物种类的增加，makeSound 函数就会变得越来越大。
 var makeSound = function (animal) {
   if (animal instanceof Duck) {
     console.log('嘎嘎嘎');
@@ -70,13 +73,11 @@ makeSound(new Duck());
 makeSound(new Chicken());
 ```
 
-随着动物种类的增加，`makeSound` 函数就会变得越来越大。
-
-多态思想是把不变的部分（动物都会叫）隔离出来，把可变的部分（具体怎么叫）封装起来。
 
 ```javascript
+// 『做什么』与『怎么做』分离
 var makeSound = function (animal) {
-  animal.sound();
+  animal.sound();
 };
 
 var Duck = function () {};
@@ -100,7 +101,7 @@ Chicken.prototype.sound = function () {
 
 ### 多态在面向对象程序设计中的作用
 
-利用对象的多态性，发布消息后，不必考虑各个对象接到消息后应该做什么（对象做什么不是临时决定的，而是事先定义为对象的一个方法，安装在对象内部），将行为分布在各个对象中，并让这些对象各自负责自己的行为，正是面向对象设计的优点。
+利用对象的多态性，发布消息后，不必考虑各个对象接到消息后应该做什么，将行为分布在各个对象中，并让这些对象各自负责自己的行为，正是面向对象设计的优点。
 
 ## 封装
 
@@ -122,12 +123,15 @@ var myObject = (function () {
 
 console.log(myObject._name)     // 输出：undefined
 console.log(myObject.getName()); // 输出：foo
-// 在 ES6 中可以通过 symbol 创建私有属性
 ```
+
+> 在 ES6 中可以通过 symbol 创建私有属性
 
 ### 封装实现
 
-封装使得对象内部的变化对其他对象而言是不可见的，对象对自己行为负责，其他对象或用户不关心它的内部实现，封装使得对象之间*松耦合*，对象之间只通过暴露的API来通信。
+封装使得对象内部的变化对其他对象而言是不可见的，对象对自己行为负责，其他对象或用户不关心它的内部实现。
+
+封装使得对象之间*松耦合*，对象之间只通过暴露的API来通信。
 
 ### 封装类型
 
@@ -153,13 +157,20 @@ Object.create = Object.create || function (obj) {
 
 ### JavaScript中的原型继承
 
+* 所有的数据都是对象(基本数据类型可以通过包装类的方式变成对象数据类型)
+* 要得到一个对象，不是通过实例化类，而是找到一个对象作为原型并克隆它
 * 对象的构造函数有原型
+* 根对象 `Object.prototype`
 * 对象把请求委托给它的构造器的原型
-* JavaScript的函数既可以作为普通函数被调用，也可以作为*构造器*被调用。
-
-在 Chrome 和 Firefox 等向外暴露了对象 `__proto__` 属性的浏览器下，我们可以通过下面这段代码来理解 `new` 运算的过程：
+* JavaScript的函数既可以作为普通函数被调用，也可以作为**构造器**被调用。
+* 用 `new` 运算符创建对象的过程，实际上是先克隆原型，再进行一些其他额外的操作。
+* 原型链并不是无限长的，最后 `Object.prototype.__proto__` 是 `null`，说明原型链后面已经没有了别的节点。
+* 对象的构造器有原型 `obj.__proto__ === Constructor.prototype`
+* `Object.create` 创建对象的效率比构造函数创建对象要慢
+* 通过 `Object.create(null)` 可以创建出没有原型的对象
 
 ```javascript
+// 理解 new 运算的过程
 function Person (name) {
   this.name = name;
 };
@@ -169,31 +180,35 @@ Person.prototype.getName = function () {
 };
 
 var objectFactory = function(){
-  var obj = new Object(); // 从 Object.prototype 上克隆一个空的对象
-  var Constructor = [].shift.call(arguments); // 取得外部传入的构造器，此例是 Person
-  obj.__proto__ = Constructor.prototype; // 指向正确的原型
-  var ret = Constructor.apply(obj, arguments); // 借用外部传入的构造器给 obj 设置属性
-  return typeof ret === 'object' ? ret : obj; // 确保构造器总是会返回一个对象
+  // 从 Object.prototype 上克隆一个空的对象
+  var obj = new Object();
+  // 取得外部传入的构造器，此例是 Person
+  var Constructor = [].shift.call(arguments);
+  // 指向正确的原型
+  obj.__proto__ = Constructor.prototype;
+  // 借用外部传入的构造器给 obj 设置属性
+  // 构造器 this 指向 obj
+  var ret = Constructor.apply(obj, arguments);
+  // 确保构造器总是会返回一个对象
+  return typeof ret === 'object' ? ret : obj;
 };
 
-var a = objectFactory(Person, 'sven');
+var a = objectFactory(Person, 'foo');
 
-console.log(a.name); // 输出：sven
-console.log(a.getName()); // 输出：sven
-console.log(Object.getPrototypeOf( a ) === Person.prototype); // 输出：true
+console.log(a.name); // 输出：foo
+console.log(a.getName()); // 输出：foo
+console.log(Object.getPrototypeOf(a) === Person.prototype); // 输出：true
 ```
 
-原型链并不是无限长的，最后 `Object.prototype.__proto__` 是 `null`，说明原型链后面已经没有了别的节点。
-
 ```javascript
-//下面的代码是我们最常用的原型继承方式：
+// 下面的代码是我们最常用的原型继承方式：
 var obj = { name: 'foo' };
 var A = function () {};
 A.prototype = obj;
 var a = new A();
 console.log(a.name); // 输出：foo
 
-//当我们期望得到一个“类”继承自另外一个“类”的效果时，往往会用下面的代码来模拟实现：
+// 当我们期望得到一个“类”继承自另外一个“类”的效果时，往往会用下面的代码来模拟实现：
 var A = function () {};
 A.prototype = { name: 'foo' };
 var B = function () {};
@@ -209,3 +224,4 @@ console.log(b.name); // 输出：foo
 > 设计模式是对语言不足的补充，如果要使用设计模式，不如去找一门更好的语言。
 >
 > Peter Norving
+
